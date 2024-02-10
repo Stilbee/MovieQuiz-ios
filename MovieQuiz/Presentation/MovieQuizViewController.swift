@@ -48,10 +48,12 @@ final class MovieQuizViewController: UIViewController {
 
     private var currentQuestionIndex = 0
     private var correctAnswers = 0
-    
-    @IBOutlet var counterLabel: UILabel!
-    @IBOutlet var textLabel: UILabel!
-    @IBOutlet var imageView: UIImageView!
+   
+    @IBOutlet private var counterLabel: UILabel!
+    @IBOutlet private var textLabel: UILabel!
+    @IBOutlet private var imageView: UIImageView!
+    @IBOutlet private var yesButton: UIButton!
+    @IBOutlet private var noButton: UIButton!
     
     // MARK: - Lifecycle
     override func viewDidLoad() {
@@ -65,10 +67,12 @@ final class MovieQuizViewController: UIViewController {
     
     @IBAction private func yesButtonClicked(_ sender: Any) {
         showAnswerResult(isCorrect: questions[currentQuestionIndex].correctAnswer == true)
-
     }
+    
     private func showNextQuestion() {
         imageView.layer.borderWidth = 0
+        yesButton.isEnabled = true
+        noButton.isEnabled = true
         if currentQuestionIndex == questions.count - 1 {
             showQuizResult()
         } else { 
@@ -91,6 +95,8 @@ final class MovieQuizViewController: UIViewController {
         imageView.layer.masksToBounds = true
         imageView.layer.borderWidth = 8
         imageView.layer.borderColor = isCorrect ? UIColor.ypGreen.cgColor : UIColor.ypRed.cgColor
+        yesButton.isEnabled = false
+        noButton.isEnabled = false
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
             self.showNextQuestion()
