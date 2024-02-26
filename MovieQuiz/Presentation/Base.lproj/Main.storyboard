@@ -20,7 +20,7 @@
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="voS-Ng-YTj">
                                 <rect key="frame" x="20" y="58" width="374" height="804"/>
                                 <subviews>
-                                    <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="D24-Ev-8EW">
+                                    <stackView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="D24-Ev-8EW">
                                         <rect key="frame" x="0.0" y="0.0" width="374" height="23.5"/>
                                         <subviews>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="251" text="Вопрос:" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Wvx-18-TzE">
@@ -37,7 +37,7 @@
                                             </label>
                                         </subviews>
                                     </stackView>
-                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="The Dark Knight" translatesAutoresizingMaskIntoConstraints="NO" id="XkW-QR-Rqs">
+                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="253" verticalHuggingPriority="253" image="The Dark Knight" translatesAutoresizingMaskIntoConstraints="NO" id="XkW-QR-Rqs">
                                         <rect key="frame" x="0.0" y="43.5" width="374" height="561"/>
                                         <constraints>
                                             <constraint firstAttribute="width" secondItem="XkW-QR-Rqs" secondAttribute="height" multiplier="2:3" id="YkY-Fp-tvL"/>
@@ -69,7 +69,7 @@
                                                     <attributedString key="attributedTitle">
                                                         <fragment content="Нет">
                                                             <attributes>
-                                                                <font key="NSFont" size="23" name="YSDisplay-Medium"/>
+                                                                <font key="NSFont" size="20" name="YSDisplay-Medium"/>
                                                                 <paragraphStyle key="NSParagraphStyle" alignment="center" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0"/>
                                                             </attributes>
                                                         </fragment>
@@ -93,7 +93,7 @@
                                                     <attributedString key="attributedTitle">
                                                         <fragment content="Да">
                                                             <attributes>
-                                                                <font key="NSFont" size="23" name="YSDisplay-Medium"/>
+                                                                <font key="NSFont" size="20" name="YSDisplay-Medium"/>
                                                                 <paragraphStyle key="NSParagraphStyle" alignment="center" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0"/>
                                                             </attributes>
                                                         </fragment>
