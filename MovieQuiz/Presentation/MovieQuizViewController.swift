@@ -11,26 +11,27 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
     private var correctAnswers = 0
     private var alertPresenter: AlertPresenterProtocol?
     
+    @IBOutlet var activityIndicator: UIActivityIndicatorView!
     @IBOutlet var imageView: UIImageView!
-    
     @IBOutlet var textLabel: UILabel!
-    
     @IBOutlet var counterLabel: UILabel!
-    
     @IBOutlet var noButton: UIButton!
     @IBOutlet var yesButton: UIButton!
+    
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        alertPresenter = AlertPresenter(delegate: self)
-        
-        questionFactory = QuestionFactory(delegate: self)
-
-        questionFactory?.requestNextQuestion()
+        imageView.layer.cornerRadius = 20
         
         dateFormatter.locale = Locale(identifier: "ru_RU")
-        
         dateFormatter.setLocalizedDateFormatFromTemplate("dd.MM.yy HH:mm")
+        
+        alertPresenter = AlertPresenter(delegate: self)
+        questionFactory = QuestionFactory(moviesLoader: MoviesLoader(), delegate: self)
+        statisticService = StatisticService()
+
+        showLoadingIndicator()
+        questionFactory?.loadData()
     }
     
     func didReceiveNextQuestion(question: QuizQuestion?) {
@@ -67,7 +68,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
     
     private func convert(model: QuizQuestion) -> QuizStepViewModel {
         let questionStep = QuizStepViewModel( // 1
-            image: UIImage(named: model.image) ?? UIImage(), // 2
+            image: UIImage(data: model.image) ?? UIImage(), // 2
             question: model.text, // 3
             questionNumber: "\(currentQuestionIndex + 1)/\(questionsAmount)") // 4
         return questionStep
@@ -80,13 +81,13 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
     }
     
     private func showAnswerResult(isCorrect: Bool) {
-        
         if isCorrect { // 1
-            correctAnswers += 1 // 2
+            correctAnswers += 1
         }
-        imageView.layer.masksToBounds = true // 1
-        imageView.layer.borderWidth = 8 // 2
-        imageView.layer.borderColor = isCorrect ? UIColor.ypGreen.cgColor : UIColor.ypRed.cgColor // 3
+        
+        imageView.layer.masksToBounds = true
+        imageView.layer.borderWidth = 8
+        imageView.layer.borderColor = isCorrect ? UIColor.ypGreen.cgColor : UIColor.ypRed.cgColor
         
         yesButton.isEnabled = false
         noButton.isEnabled = false
@@ -98,7 +99,6 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
             yesButton.isEnabled = true
             noButton.isEnabled = true
         }
-        
     }
     
     private func showNextQuestionOrResults() {
@@ -132,87 +132,48 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
             self.currentQuestionIndex = 0
             self.correctAnswers = 0
             imageView.layer.borderWidth = 0
-            questionFactory?.requestNextQuestion()})
+            questionFactory?.requestNextQuestion()}
+        )
         alertPresenter?.showAlert(alert: alertModel)
-        
-//        let action = UIAlertAction(title: result.buttonText, style: .default) { [weak self] _ in
-//            guard let self = self else { return }
-//            self.currentQuestionIndex = 0
-//            self.correctAnswers = 0
-//            
-//            questionFactory?.requestNextQuestion()
-//        }
-//        
-//        alert.addAction(action)
-//        
-//        self.present(alert, animated: true, completion: nil)
     }
     
     func didLoadAlert(ui: UIAlertController) {
         self.present(ui, animated: true, completion: nil)
     }
+    
+    private func showLoadingIndicator() {
+        activityIndicator.isHidden = false // говорим, что индикатор загрузки не скрыт
+        activityIndicator.startAnimating() // включаем анимацию
+    }
+    
+    private func showNetworkError(message: String) {
+        hideLoadingIndicator() // скрываем индикатор загрузки
+        
+        // создайте и покажите алерт
+        let model = AlertModel(title: "Ошибка",
+                            message: message,
+                            buttonText: "Попробовать еще раз") { [weak self] in
+            guard let self = self else { return }
+            
+            self.currentQuestionIndex = 0
+            self.correctAnswers = 0
+            
+            self.questionFactory?.requestNextQuestion()
+        }
+        alertPresenter?.showAlert(alert: model)
+    }
+    
+    private func hideLoadingIndicator() {
+        activityIndicator.isHidden = true
+        activityIndicator.stopAnimating()
+    }
+    
+    func didLoadDataFromServer() {
+        activityIndicator.isHidden = true // скрываем индикатор загрузки
+        questionFactory?.requestNextQuestion()
+    }
+
+    func didFailToLoadData(with error: Error) {
+        showNetworkError(message: error.localizedDescription)
+    }
 }
-
-/*
- Mock-данные
- 
- 
- Картинка: The Godfather
- Настоящий рейтинг: 9,2
- Вопрос: Рейтинг этого фильма больше чем 6?
- Ответ: ДА
-
-
- Картинка: The Dark Knight
- Настоящий рейтинг: 9
- Вопрос: Рейтинг этого фильма больше чем 6?
- Ответ: ДА
-
-
- Картинка: Kill Bill
- Настоящий рейтинг: 8,1
- Вопрос: Рейтинг этого фильма больше чем 6?
- Ответ: ДА
-
-
- Картинка: The Avengers
- Настоящий рейтинг: 8
- Вопрос: Рейтинг этого фильма больше чем 6?
- Ответ: ДА
-
-
- Картинка: Deadpool
- Настоящий рейтинг: 8
- Вопрос: Рейтинг этого фильма больше чем 6?
- Ответ: ДА
-
-
- Картинка: The Green Knight
- Настоящий рейтинг: 6,6
- Вопрос: Рейтинг этого фильма больше чем 6?
- Ответ: ДА
-
-
- Картинка: Old
- Настоящий рейтинг: 5,8
- Вопрос: Рейтинг этого фильма больше чем 6?
- Ответ: НЕТ
-
-
- Картинка: The Ice Age Adventures of Buck Wild
- Настоящий рейтинг: 4,3
- Вопрос: Рейтинг этого фильма больше чем 6?
- Ответ: НЕТ
-
-
- Картинка: Tesla
- Настоящий рейтинг: 5,1
- Вопрос: Рейтинг этого фильма больше чем 6?
- Ответ: НЕТ
-
-
- Картинка: Vivarium
- Настоящий рейтинг: 5,8
- Вопрос: Рейтинг этого фильма больше чем 6?
- Ответ: НЕТ
- */
