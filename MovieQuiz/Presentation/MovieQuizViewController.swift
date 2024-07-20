@@ -1,6 +1,8 @@
 import UIKit
 
-final class MovieQuizViewController: UIViewController, AlertPresenterDelegate {
+
+
+final class MovieQuizViewController: UIViewController, MovieQuizViewControllerProtocol, AlertPresenterDelegate {
     
     private var presenter: MovieQuizPresenter!
     private var alertPresenter: AlertPresenterProtocol?
@@ -39,10 +41,10 @@ final class MovieQuizViewController: UIViewController, AlertPresenterDelegate {
         counterLabel.text = step.questionNumber
     }
     
-    func highlightImageBorder(isCorrectBorder: Bool) {
+    func highlightImageBorder(isCorrectAnswer: Bool) {
         imageView.layer.masksToBounds = true
         imageView.layer.borderWidth = 8
-        imageView.layer.borderColor = isCorrectBorder ? UIColor.ypGreen.cgColor : UIColor.ypRed.cgColor
+        imageView.layer.borderColor = isCorrectAnswer ? UIColor.ypGreen.cgColor : UIColor.ypRed.cgColor
     }
     
     func hideImageBorder() {

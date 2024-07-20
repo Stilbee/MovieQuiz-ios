@@ -1,13 +1,7 @@
 import Foundation
 import UIKit
 
-final class MovieQuizPresenter: QuestionFactoryDelegate {    
-    private var dateFormatter: DateFormatter {
-        let d = DateFormatter()
-        d.locale = Locale(identifier: "ru_RU")
-        d.setLocalizedDateFormatFromTemplate("dd.MM.yy HH:mm")
-        return d
-    }
+final class MovieQuizPresenter: QuestionFactoryDelegate {
     private var statisticService = StatisticService()
     private var currentQuestionIndex = 0
     
@@ -16,9 +10,9 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
     var correctAnswers = 0
     let questionsAmount: Int = 10
     var currentQuestion: QuizQuestion?
-    weak var viewController: MovieQuizViewController?
+    weak var viewController: MovieQuizViewControllerProtocol?
     
-    init(viewController: MovieQuizViewController) {
+    init(viewController: MovieQuizViewControllerProtocol) {
         self.viewController = viewController
         
         self.questionFactory = QuestionFactory(moviesLoader: MoviesLoader(), delegate: self)
@@ -99,8 +93,7 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
     func showNextQuestionOrResults() {
         if isLastQuestion() {
             statisticService.store(correct: correctAnswers, total: questionsAmount)
-            
-            let formattedDate = dateFormatter.string(from: statisticService.bestGame.date)
+        
             let text = makeResultsMessage()
             
             let viewModel = QuizResultsViewModel( // 2
@@ -133,7 +126,7 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
     }
     
     private func showAnswerResult(isCorrect: Bool) {
-        viewController?.highlightImageBorder(isCorrectBorder: isCorrect)
+        viewController?.highlightImageBorder(isCorrectAnswer: isCorrect)
         viewController?.disableButtons()
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
