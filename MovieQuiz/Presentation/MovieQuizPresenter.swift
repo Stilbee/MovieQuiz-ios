@@ -1,21 +1,31 @@
 import Foundation
 import UIKit
 
-final class MovieQuizPresenter {
+final class MovieQuizPresenter: QuestionFactoryDelegate {    
     private var dateFormatter: DateFormatter {
         let d = DateFormatter()
         d.locale = Locale(identifier: "ru_RU")
         d.setLocalizedDateFormatFromTemplate("dd.MM.yy HH:mm")
         return d
     }
+    private var statisticService = StatisticService()
+    private var currentQuestionIndex = 0
     
     var questionFactory: QuestionFactoryProtocol?
+    
     var correctAnswers = 0
-    private var statisticService = StatisticService()
     let questionsAmount: Int = 10
-    private var currentQuestionIndex = 0
     var currentQuestion: QuizQuestion?
     weak var viewController: MovieQuizViewController?
+    
+    init(viewController: MovieQuizViewController) {
+        self.viewController = viewController
+        
+        self.questionFactory = QuestionFactory(moviesLoader: MoviesLoader(), delegate: self)
+        self.questionFactory?.loadData()
+        
+        viewController.showLoadingIndicator()
+    }
     
     public func convert(model: QuizQuestion) -> QuizStepViewModel {
         let questionStep = QuizStepViewModel( // 1
@@ -29,8 +39,10 @@ final class MovieQuizPresenter {
         currentQuestionIndex == questionsAmount - 1
     }
     
-    func resetQuestionIndex() {
+    func resetGame() {
         currentQuestionIndex = 0
+        correctAnswers = 0
+        questionFactory?.requestNextQuestion()
     }
     
     func switchToNextQuestion() {
@@ -51,8 +63,13 @@ final class MovieQuizPresenter {
             return
         }
         let givenAnswer = isYes
+        let isCorrect = givenAnswer == currentQuestion.correctAnswer
         
-        viewController?.showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
+        if (isCorrect) {
+            correctAnswers += 1
+        }
+        
+        viewController?.showAnswerResult(isCorrect: isCorrect)
     }
     
     func didReceiveNextQuestion(question: QuizQuestion?) {
@@ -68,6 +85,15 @@ final class MovieQuizPresenter {
         DispatchQueue.main.async { [weak self] in
             self?.viewController?.show(quiz: viewModel)
         }
+    }
+    
+    func didLoadDataFromServer() {
+        viewController?.hideLoadingIndicator()
+        questionFactory?.requestNextQuestion()
+    }
+
+    func didFailToLoadData(with error: Error) {
+        viewController?.showNetworkError(message: error.localizedDescription)
     }
     
     func showNextQuestionOrResults() {
