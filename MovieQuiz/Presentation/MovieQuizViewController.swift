@@ -17,12 +17,8 @@ final class MovieQuizViewController: UIViewController, AlertPresenterDelegate {
         super.viewDidLoad()
         
         presenter = MovieQuizPresenter(viewController: self)
-        
         imageView.layer.cornerRadius = 20
-        
         alertPresenter = AlertPresenter(delegate: self)
-        
-        showLoadingIndicator()
     }
     
     func didReceiveNextQuestion(question: QuizQuestion?) {
@@ -43,22 +39,24 @@ final class MovieQuizViewController: UIViewController, AlertPresenterDelegate {
         counterLabel.text = step.questionNumber
     }
     
-    func showAnswerResult(isCorrect: Bool) {
+    func highlightImageBorder(isCorrectBorder: Bool) {
         imageView.layer.masksToBounds = true
         imageView.layer.borderWidth = 8
-        imageView.layer.borderColor = isCorrect ? UIColor.ypGreen.cgColor : UIColor.ypRed.cgColor
-        
+        imageView.layer.borderColor = isCorrectBorder ? UIColor.ypGreen.cgColor : UIColor.ypRed.cgColor
+    }
+    
+    func hideImageBorder() {
+        imageView.layer.borderWidth = 0
+    }
+    
+    func disableButtons() {
         yesButton.isEnabled = false
         noButton.isEnabled = false
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
-            guard let self = self else { return }
-            self.presenter.showNextQuestionOrResults()
-            
-            yesButton.isEnabled = true
-            noButton.isEnabled = true
-            imageView.layer.borderWidth = 0
-        }
+    }
+    
+    func enableButtons() {
+        yesButton.isEnabled = true
+        noButton.isEnabled = true
     }
     
     func show(quiz result: QuizResultsViewModel) {

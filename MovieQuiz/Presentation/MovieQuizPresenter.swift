@@ -69,7 +69,7 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
             correctAnswers += 1
         }
         
-        viewController?.showAnswerResult(isCorrect: isCorrect)
+        showAnswerResult(isCorrect: isCorrect)
     }
     
     func didReceiveNextQuestion(question: QuizQuestion?) {
@@ -101,13 +101,7 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
             statisticService.store(correct: correctAnswers, total: questionsAmount)
             
             let formattedDate = dateFormatter.string(from: statisticService.bestGame.date)
-            let text = """
-            Ваш результат: \(correctAnswers)/\(questionsAmount)
-            Количество сыграных квизов: \(statisticService.gamesCount)
-            Рекорд: \(statisticService.bestGame.correct)/\(statisticService.bestGame.total)
-            (\(formattedDate))
-            Средняя точность: \(statisticService.totalAccuracy)%
-            """
+            let text = makeResultsMessage()
             
             let viewModel = QuizResultsViewModel( // 2
                 title: "Этот раунд окончен!",
@@ -117,6 +111,37 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
         } else {
             switchToNextQuestion()
             questionFactory?.requestNextQuestion()
+        }
+    }
+    
+    func makeResultsMessage() -> String {
+        statisticService.store(correct: correctAnswers, total: questionsAmount)
+        
+        let bestGame = statisticService.bestGame
+        
+        let totalPlaysCountLine = "Количество сыгранных квизов: \(statisticService.gamesCount)"
+        let currentGameResultLine = "Ваш результат: \(correctAnswers)\\\(questionsAmount)"
+        let bestGameInfoLine = "Рекорд: \(bestGame.correct)\\\(bestGame.total)"
+        + " (\(bestGame.date.dateTimeString))"
+        let averageAccuracyLine = "Средняя точность: \(String(format: "%.2f", statisticService.totalAccuracy))%"
+        
+        let resultMessage = [
+            currentGameResultLine, totalPlaysCountLine, bestGameInfoLine, averageAccuracyLine
+        ].joined(separator: "\n")
+        
+        return resultMessage
+    }
+    
+    private func showAnswerResult(isCorrect: Bool) {
+        viewController?.highlightImageBorder(isCorrectBorder: isCorrect)
+        viewController?.disableButtons()
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
+            guard let self = self else { return }
+            self.showNextQuestionOrResults()
+            
+            self.viewController?.enableButtons()
+            self.viewController?.hideImageBorder()
         }
     }
 }
