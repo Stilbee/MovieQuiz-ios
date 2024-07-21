@@ -7,12 +7,12 @@ final class MovieQuizViewController: UIViewController, MovieQuizViewControllerPr
     private var presenter: MovieQuizPresenter!
     private var alertPresenter: AlertPresenterProtocol?
     
-    @IBOutlet var activityIndicator: UIActivityIndicatorView!
-    @IBOutlet var imageView: UIImageView!
-    @IBOutlet var textLabel: UILabel!
-    @IBOutlet var counterLabel: UILabel!
-    @IBOutlet var noButton: UIButton!
-    @IBOutlet var yesButton: UIButton!
+    @IBOutlet private var activityIndicator: UIActivityIndicatorView!
+    @IBOutlet private var imageView: UIImageView!
+    @IBOutlet private var textLabel: UILabel!
+    @IBOutlet private var counterLabel: UILabel!
+    @IBOutlet private var noButton: UIButton!
+    @IBOutlet private var yesButton: UIButton!
     
     // MARK: - Lifecycle
     override func viewDidLoad() {
@@ -27,11 +27,11 @@ final class MovieQuizViewController: UIViewController, MovieQuizViewControllerPr
         presenter.didReceiveNextQuestion(question: question)
     }
     
-    @IBAction func noButtonClicked(_ sender: UIButton) {
+    @IBAction private func noButtonClicked(_ sender: UIButton) {
         presenter.noButtonClicked()
     }
     
-    @IBAction func yesButtonClicked(_ sender: UIButton) {
+    @IBAction private func yesButtonClicked(_ sender: UIButton) {
         presenter.yesButtonClicked()
     }
     
