@@ -127,13 +127,13 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
     
     private func showAnswerResult(isCorrect: Bool) {
         viewController?.highlightImageBorder(isCorrectAnswer: isCorrect)
-        viewController?.disableButtons()
+        viewController?.buttons(enabled: false)
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
             guard let self = self else { return }
             self.showNextQuestionOrResults()
             
-            self.viewController?.enableButtons()
+            self.viewController?.buttons(enabled: true)
             self.viewController?.hideImageBorder()
         }
     }

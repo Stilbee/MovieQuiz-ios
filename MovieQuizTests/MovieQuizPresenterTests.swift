@@ -50,11 +50,7 @@ final class MovieQuizPresenterTests: XCTestCase {
             
         }
         
-        func disableButtons() {
-            
-        }
-        
-        func enableButtons() {
+        func buttons(enabled: Bool) {
             
         }
         

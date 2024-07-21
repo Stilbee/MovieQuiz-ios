@@ -51,14 +51,9 @@ final class MovieQuizViewController: UIViewController, MovieQuizViewControllerPr
         imageView.layer.borderWidth = 0
     }
     
-    func disableButtons() {
-        yesButton.isEnabled = false
-        noButton.isEnabled = false
-    }
-    
-    func enableButtons() {
-        yesButton.isEnabled = true
-        noButton.isEnabled = true
+    func buttons(enabled: Bool) {
+        yesButton.isEnabled = enabled
+        noButton.isEnabled = enabled
     }
     
     func show(quiz result: QuizResultsViewModel) {
